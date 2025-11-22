@@ -1,0 +1,104 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Group {
+  id          String   @id @default(uuid())
+  name        String
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  members     GroupMember[]
+  reminders   Reminder[]
+
+  @@map("groups")
+}
+
+model GroupMember {
+  id        String   @id @default(uuid())
+  groupId   String
+  name      String
+  email     String?
+  phone     String?
+  whatsapp  String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  group Group @relation(fields: [groupId], references: [id], onDelete: Cascade)
+
+  @@index([groupId])
+  @@map("group_members")
+}
+
+model CalendarEvent {
+  id          String    @id @default(uuid())
+  title       String
+  description String?
+  startTime   DateTime
+  endTime     DateTime?
+  location    String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  reminders   Reminder[]
+
+  @@map("calendar_events")
+}
+
+model Reminder {
+  id            String       @id @default(uuid())
+  eventId       String
+  groupId       String
+  reminderTime  DateTime
+  advanceMinutes Int
+  message       String
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+  status        ReminderStatus @default(PENDING)
+  sentAt        DateTime?
+  acknowledgments Acknowledgement[]
+
+  event CalendarEvent @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  group Group         @relation(fields: [groupId], references: [id], onDelete: Cascade)
+
+  @@index([eventId])
+  @@index([groupId])
+  @@index([reminderTime])
+  @@map("reminders")
+}
+
+enum ReminderStatus {
+  PENDING
+  SENT
+  FAILED
+}
+
+model Acknowledgement {
+  id            String              @id @default(uuid())
+  reminderId    String
+  memberId      String?
+  method        AcknowledgementMethod
+  acknowledgedAt DateTime            @default(now())
+  notes         String?
+
+  reminder Reminder @relation(fields: [reminderId], references: [id], onDelete: Cascade)
+
+  @@index([reminderId])
+  @@map("acknowledgments")
+}
+
+enum AcknowledgementMethod {
+  EMAIL
+  SMS
+  WHATSAPP
+  WEB_APP
+  MANUAL
+}
+
