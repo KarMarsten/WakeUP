@@ -21,7 +21,7 @@ A comprehensive reminder application that sends notifications to groups of peopl
 - **Node.js** with **Express** and **TypeScript**
 - **PostgreSQL** database with **Prisma ORM**
 - **Nodemailer** for email notifications
-- **Twilio** for SMS notifications
+- **Twilio** for SMS notifications - must test this
 - **WhatsApp Web.js** for WhatsApp messages
 - **node-cron** for scheduled reminder checks
 
