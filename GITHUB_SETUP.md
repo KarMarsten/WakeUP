@@ -85,3 +85,4 @@ Your repository will include:
 - ❌ No `.env` files (excluded for security)
 - ❌ No `node_modules` (excluded - install with `npm install`)
 
+
